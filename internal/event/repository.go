@@ -12,6 +12,7 @@ type Repository interface {
 	Create(event *Event) error
 	GetAll() ([]*Event, error)
 	GetEventByID(eventId uint) (*Event, error)
+	Update(event *Event) error
 }
 
 type respository struct {
@@ -50,4 +51,8 @@ func (r *respository) GetEventByID(eventId uint) (*Event, error) {
 		return nil, err
 	}
 	return event, nil
+}
+
+func (r *respository) Update(event *Event) error {
+	return r.db.Save(event).Error
 }
