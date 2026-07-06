@@ -1,20 +1,25 @@
 package dto
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type CreateRequest struct {
-	Title        string    `json:"title" validate:"required,min=2,max=150"`
-	Description  string    `json:"description" validate:"omitempty,max=1000"`
-	Location     string    `json:"location" validate:"required"`
-	StartsAt     time.Time `json:"starts_at" validate:"required"`
-	TotalTickets int       `json:"total_tickets" validate:"required,gt=0"`
-	Price        int       `json:"price" validate:"gte=0"`
+	Title        string                `form:"title" validate:"required,min=2,max=150"`
+	Description  string                `form:"description" validate:"omitempty,max=1000"`
+	Location     string                `form:"location" validate:"required"`
+	StartsAt     time.Time             `form:"starts_at" validate:"required"`
+	TotalTickets int                   `form:"total_tickets" validate:"required,gt=0"`
+	Price        int                   `form:"price" validate:"gte=0"`
+	Photo        *multipart.FileHeader `form:"photo" validate:"omitempty"`
 }
 
 type UpdateRequest struct {
-	Title       string    `json:"title" validate:"omitempty,min=2,max=150"`
-	Description string    `json:"description" validate:"omitempty,max=1000"`
-	Location    string    `json:"location" validate:"omitempty"`
-	StartsAt    time.Time `json:"starts_at" validate:"omitempty"`
-	Price       int       `json:"price" validate:"omitempty,gte=0"`
+	Title       string                `form:"title" validate:"omitempty,min=2,max=150"`
+	Description string                `form:"description" validate:"omitempty,max=1000"`
+	Location    string                `form:"location" validate:"omitempty"`
+	StartsAt    time.Time             `form:"starts_at" validate:"omitempty"`
+	Price       int                   `form:"price" validate:"omitempty,gte=0"`
+	Photo       *multipart.FileHeader `form:"photo" validate:"omitempty,url"`
 }

@@ -16,6 +16,7 @@ type Event struct {
 	TotalTickets     int       `json:"total_tickets" gorm:"not null"`
 	AvailableTickets int       `json:"available_tickets" gorm:"not null"`
 	Price            int       `json:"price" gorm:"not null"`
+	PhotoURL         string    `json:"photo_url" gorm:"type:varchar(255)"`
 }
 
 func (e *Event) ToResponse() *dto.Response {
@@ -28,6 +29,7 @@ func (e *Event) ToResponse() *dto.Response {
 		TotalTickets:     e.TotalTickets,
 		AvailableTickets: e.AvailableTickets,
 		Price:            e.Price,
+		PhotoURL:         e.PhotoURL,
 		CreatedAt:        e.CreatedAt.String(),
 	}
 }

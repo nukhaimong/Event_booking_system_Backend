@@ -1,20 +1,24 @@
 package event
 
 import (
+	"errors"
+	"gotickets/internal/config"
 	"gotickets/internal/domain/event/dto"
 )
 
 type service struct {
-	repo Repository
+	repo       Repository
+	cloudinary *config.CloudinaryService
 }
 
-func NewService(repo Repository) *service {
+func NewService(repo Repository, cloudinary *config.CloudinaryService) *service {
 	return &service{
-		repo: repo,
+		repo:       repo,
+		cloudinary: cloudinary,
 	}
 }
 
-func (s *service) CreateEvent(req dto.CreateRequest) (*dto.Response, error) {
+func (s *service) CreateEvent(req *dto.CreateRequest) (*dto.Response, error) {
 	event := &Event{
 		Title:            req.Title,
 		Description:      req.Description,
@@ -23,6 +27,22 @@ func (s *service) CreateEvent(req dto.CreateRequest) (*dto.Response, error) {
 		TotalTickets:     req.TotalTickets,
 		AvailableTickets: req.TotalTickets,
 		Price:            req.Price,
+		PhotoURL:         "",
+	}
+
+	// upload the photo if provided
+	if req.Photo != nil {
+		file, err := req.Photo.Open()
+		if err != nil {
+			return nil, errors.New("Failed to open file: " + err.Error())
+		}
+		defer file.Close()
+		// upload file to cloudinary
+		photoURL, err := s.cloudinary.UploadEventImage(file, req.Photo)
+		if err != nil {
+			return nil, errors.New("failed to upload photo: " + err.Error())
+		}
+		event.PhotoURL = photoURL
 	}
 
 	if err := s.repo.Create(event); err != nil {

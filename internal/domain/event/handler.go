@@ -6,6 +6,7 @@ import (
 	httpresponse "gotickets/internal/httpResponse"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v5"
 )
@@ -37,13 +38,54 @@ func eventErrorResponse(c *echo.Context, err error) error {
 func (h *handler) CreateEvent(c *echo.Context) error {
 	var req dto.CreateRequest
 
-	if err := c.Bind(&req); err != nil {
+	// if err := c.Bind(&req); err != nil {
+	// 	return c.JSON(http.StatusBadRequest, httpresponse.Error{
+	// 		Code:    http.StatusBadRequest,
+	// 		Message: "Invalid request payload",
+	// 		Details: err.Error(),
+	// 	})
+	// }
+
+	//Bind form data
+	req.Title = c.FormValue("title")
+	req.Description = c.FormValue("description")
+	req.Location = c.FormValue("location")
+	startsAtStr := c.FormValue("starts_at")
+
+	startsAt, err := time.Parse("2006-01-02 15:04:05", startsAtStr)
+
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, httpresponse.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Invalid request payload",
+			Message: "Invalid date format",
 			Details: err.Error(),
 		})
 	}
+	req.StartsAt = startsAt
+
+	// Bind int and float
+	totalTickets, _ := strconv.Atoi(c.FormValue("total_tickets"))
+	req.TotalTickets = totalTickets
+
+	priceStr := c.FormValue("price")
+
+	price, err := strconv.Atoi(priceStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, httpresponse.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid price value",
+			Details: err.Error(),
+		})
+
+	}
+	req.Price = price
+
+	// bind the file
+	fileHeader, err := c.FormFile("photo")
+	if err == nil {
+		req.Photo = fileHeader
+	}
+
 	if err := c.Validate(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpresponse.Error{
 			Code:    http.StatusBadRequest,
@@ -51,7 +93,8 @@ func (h *handler) CreateEvent(c *echo.Context) error {
 			Details: err.Error(),
 		})
 	}
-	response, err := h.service.CreateEvent(req)
+
+	response, err := h.service.CreateEvent(&req)
 	if err != nil {
 		return eventErrorResponse(c, err)
 	}

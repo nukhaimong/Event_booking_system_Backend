@@ -12,4 +12,5 @@ type Response struct {
 	AvailableTickets int       `json:"available_tickets"`
 	Price            int       `json:"price"`
 	CreatedAt        string    `json:"create_at"`
+	PhotoURL         string    `json:"photo_url"`
 }
