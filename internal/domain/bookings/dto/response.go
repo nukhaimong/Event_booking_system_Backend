@@ -9,4 +9,5 @@ type Response struct {
 	Status      string `json:"status"`
 	BookingCode string `json:"booking_code"`
 	CreatedAt   string `json:"created_at"`
+	CheckoutURL string `json:"checkout_url,omitempty"`
 }

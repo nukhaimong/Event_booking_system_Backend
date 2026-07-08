@@ -13,12 +13,13 @@ const (
 
 type Booking struct {
 	gorm.Model
-	UserID      uint   `json:"user_id" gorm:"not null"`
-	EventID     uint   `json:"event_id" gorm:"not null"`
-	Quantity    int    `json:"quantity" gorm:"not null"`
-	TotalPrice  int    `json:"total_price" gorm:"not null"`
-	Status      string `json:"status" gorm:"type:varchar(50);not null"`
-	BookingCode string `json:"booking_code" gorm:"uniqueIndex;not null"`
+	UserID          uint   `json:"user_id" gorm:"not null"`
+	EventID         uint   `json:"event_id" gorm:"not null"`
+	Quantity        int    `json:"quantity" gorm:"not null"`
+	TotalPrice      int    `json:"total_price" gorm:"not null"`
+	Status          string `json:"status" gorm:"type:varchar(50);not null"`
+	BookingCode     string `json:"booking_code" gorm:"uniqueIndex;not null"`
+	StripeSessionID string `json:"stripe_session_id" gorm:"index"`
 }
 
 func (b *Booking) ToResponse() *dto.Response {

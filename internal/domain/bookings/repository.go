@@ -2,6 +2,7 @@ package bookings
 
 import (
 	"errors"
+	"fmt"
 	"gotickets/internal/domain/event"
 
 	"gorm.io/gorm"
@@ -21,6 +22,7 @@ type Repository interface {
 	GetByUserID(userId uint) ([]*Booking, error)
 	Update(booking *Booking) error
 	CreateWithTicketsUpdate(userId uint, eventId uint, quantity int) (*Booking, error)
+	DeleteBooking(bookingId uint) error
 }
 
 type repository struct {
@@ -104,4 +106,16 @@ func (r *repository) CreateWithTicketsUpdate(userId uint, eventId uint, quantity
 		return nil, err
 	}
 	return booking, nil
+}
+
+func (r *repository) DeleteBooking(bookingId uint) error {
+
+	result := r.db.Delete(&Booking{}, bookingId)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("booking with ID %d not found", bookingId)
+	}
+	return nil
 }
